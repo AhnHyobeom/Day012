@@ -52,6 +52,18 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="medianform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="medianform.Designer.cs">
+      <DependentUpon>medianform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="morphology.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="morphology.Designer.cs">
+      <DependentUpon>morphology.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="subform.cs">
@@ -62,6 +74,9 @@
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="morphology.resx">
+      <DependentUpon>morphology.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

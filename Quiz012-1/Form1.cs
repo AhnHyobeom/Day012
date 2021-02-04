@@ -110,22 +110,54 @@ namespace Quiz012_1
 
         private void erosionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            erosionImage();
+            morphology mp = new morphology();
+            if (mp.ShowDialog() == DialogResult.OK) //grayscale image
+            {
+                erosionGray();
+            }
+            else //bwImage
+            {
+                erosionBW();
+            }
         }
 
         private void dilationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dilationImage();
+            morphology mp = new morphology();
+            if (mp.ShowDialog() == DialogResult.OK) //grayscale image
+            {
+                dilationGray();
+            }
+            else//bwImage
+            {
+                dilationBW();
+            }
         }
 
         private void openingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openingImage();
+            morphology mp = new morphology();
+            if(mp.ShowDialog() == DialogResult.OK) //grayscale image
+            {
+                openingGray();
+            } else//bwImage
+            {
+                openingBW();
+            }
         }
 
         private void closingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            closingImage();
+            morphology mp = new morphology();
+            if (mp.ShowDialog() == DialogResult.OK) //grayscale image
+            {
+                closingGray();
+            }
+            else //bwImage
+            {
+                closingBW();
+            }
+            
         }
 
         private void 모폴로지ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -655,7 +687,7 @@ namespace Quiz012_1
             displayImage();
         }
 
-        void erosionImage()
+        void erosionGray()
         {
             if (inImage == null)
             {
@@ -668,7 +700,7 @@ namespace Quiz012_1
             byte[,] inputCopy = new byte[inH, inW];//가장자리 처리를 위한 복사본 메모리
             byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
             inputCopy = (byte[,])inImage.Clone();
-            calculErosion(tmpInput, inputCopy, tmpOutput);
+            calculErosionGray(tmpInput, inputCopy, tmpOutput);
             //후처리
             outImage = (byte[,])tmpOutput.Clone();
             displayImage();
@@ -719,7 +751,7 @@ namespace Quiz012_1
                 }
             }
         }
-        void calculErosion(byte[,] tmpInput, byte[,] inputCopy, byte[,] tmpOutput)
+        void calculErosionGray(byte[,] tmpInput, byte[,] inputCopy, byte[,] tmpOutput)
         {
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
@@ -744,7 +776,7 @@ namespace Quiz012_1
             }
         }
 
-        void dilationImage()
+        void dilationGray()
         {
             if (inImage == null)
             {
@@ -757,12 +789,12 @@ namespace Quiz012_1
             byte[,] inputCopy = new byte[inH, inW];//가장자리 처리를 위한 복사본 메모리
             byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
             inputCopy = (byte[,])inImage.Clone();
-            calculDilation(tmpInput, inputCopy, tmpOutput);
+            calculDilationGray(tmpInput, inputCopy, tmpOutput);
             //후처리
             outImage = (byte[,])tmpOutput.Clone();
             displayImage();
         }
-        void calculDilation(byte[,] tmpInput, byte[,] inputCopy, byte[,] tmpOutput)
+        void calculDilationGray (byte[,] tmpInput, byte[,] inputCopy, byte[,] tmpOutput)
         {
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
@@ -787,7 +819,7 @@ namespace Quiz012_1
             }
         }
 
-        void openingImage()
+        void openingGray()
         {
             if (inImage == null)
             {
@@ -802,7 +834,7 @@ namespace Quiz012_1
             inputCopy = (byte[,])inImage.Clone();
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
-            calculErosion(tmpInput, inputCopy, tmpOutput);
+            calculErosionGray(tmpInput, inputCopy, tmpOutput);
             //2번 가장차리 처리 연산을 위한 메모리 
             byte[,] outBufImage = new byte[outH + 4, outW + 4]; 
             //가장자리 처리
@@ -829,7 +861,7 @@ namespace Quiz012_1
             displayImage();
         }
 
-        void closingImage()
+        void closingGray()
         {
             if (inImage == null)
             {
@@ -844,7 +876,7 @@ namespace Quiz012_1
             inputCopy = (byte[,])inImage.Clone();
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
-            calculDilation(tmpInput, inputCopy, tmpOutput);
+            calculDilationGray(tmpInput, inputCopy, tmpOutput);
             //2번 가장차리 처리 연산을 위한 메모리 
             byte[,] outBufImage = new byte[outH + 4, outW + 4];
             //가장자리 처리
@@ -866,6 +898,235 @@ namespace Quiz012_1
                         }
                     }
                     outImage[i - 2, j - 2] = min;
+                }
+            }
+            displayImage();
+        }
+        //모폴로지 이진화 영상 (이진화 영상은 가장자리 처리하지 않음)
+        void erosionBW()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            calculErosionBW();
+            displayImage();
+        }
+
+        void calculErosionBW()
+        {
+            int[,] erosionMask = { //마스크 설정
+                    { 0, 0, 1, 0, 0},
+                    { 1, 1, 1, 1, 1},
+                    { 1, 1, 1, 1, 1},
+                    { 1, 1, 1, 1, 1},
+                    { 0, 0, 1, 0, 0} };
+            byte isErosion;
+            for (int i = 2; i < inH - 2; i++)
+            {//가장자리는 처리하지 않음
+                for (int j = 2; j < inW - 2; j++)
+                {
+                    isErosion = 255;
+                    for (int k = 0; k < 5; k++)
+                    {
+                        for (int m = 0; m < 5; m++)
+                        {
+                            if (erosionMask[k, m] == 1)
+                            {
+                                if (inImage[i - 2 + k, j - 2 + m] == 0)
+                                {//이미지가 0이라면
+                                    isErosion = 0;//침식
+                                    outImage[i, j] = isErosion;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isErosion == 0)
+                        {
+                            break;
+                        }
+                    }
+                    if (isErosion == 255)
+                    {//마스크를 모두 통과했다면
+                        outImage[i, j] = isErosion;
+                    }
+                }
+            }
+        }
+
+        void dilationBW()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            //화소 영역 처리
+            //마스크 결정
+            calculDilationBW();
+            displayImage();
+        }
+        void calculDilationBW()
+        {
+            int[,] dilationMask = { //마스크 설정
+                    { 0, 0, 1, 0, 0},
+                    { 1, 1, 1, 1, 1},
+                    { 1, 1, 1, 1, 1},
+                    { 1, 1, 1, 1, 1},
+                    { 0, 0, 1, 0, 0} };
+            byte isDilation;
+            for (int i = 2; i < inH - 2; i++)
+            {//가장자리는 처리하지 않음
+                for (int j = 2; j < inW - 2; j++)
+                {
+                    isDilation = 0;
+                    for (int k = 0; k < 5; k++)
+                    {
+                        for (int m = 0; m < 5; m++)
+                        {
+                            if (dilationMask[k, m] == 1)
+                            {
+                                if (inImage[i - 2 + k, j - 2 + m] == 255)
+                                {//이미지가 255라면
+                                    isDilation = 255;//팽창
+                                    outImage[i, j] = isDilation;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDilation == 255)
+                        {
+                            break;
+                        }
+                    }
+                    if (isDilation == 0)
+                    {//마스크를 모두 통과했다면
+                        outImage[i, j] = isDilation;
+                    }
+                }
+            }
+        }
+
+        void openingBW()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            //화소 영역 처리
+            //마스크 결정
+            calculErosionBW();
+            //임시 출력 메모리 생성
+            byte[,] outBufImage = new byte[outH, outW];
+            int[,] dilationMask = { //마스크 설정
+                { 0, 1, 0},
+                { 1, 1, 1},
+                { 0, 1, 0} };
+            byte isDilation;
+            for (int i = 1; i < inH - 1; i++)
+            {//엣지는 처리하지 않음
+                for (int j = 1; j < inW - 1; j++)
+                {
+                    isDilation = 0;
+                    for (int k = 0; k < 3; k++)
+                    {
+                        for (int m = 0; m < 3; m++)
+                        {
+                            if (dilationMask[k, m] == 1)
+                            {//mask 값이 1이고
+                                if (outImage[i - 1 + k, j - 1 + m] == 255)
+                                {//이미지가 255라면
+                                    isDilation = 255;//팽창
+                                    outBufImage[i, j] = isDilation;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDilation == 255)
+                        {
+                            break;
+                        }
+                    }
+                    if (isDilation == 0)
+                    {//마스크를 모두 통과했다면
+                        outBufImage[i, j] = isDilation;
+                    }
+                }
+            }
+            //임시 출력 -> 출력
+            for (int i = 0; i < outH; i++)
+            {
+                for (int j = 0; j < outW; j++)
+                {
+                    outImage[i, j] = outBufImage[i, j];
+                }
+            }
+            displayImage();
+        }
+
+        void closingBW()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            //화소 영역 처리
+            //마스크 결정
+            calculDilationBW();
+            //임시 출력 메모리 생성
+            byte[,] outBufImage = new byte[outH, outW];
+            int[,] erosionMask = { //마스크 설정
+                { 0, 1, 0},
+                { 1, 1, 1},
+                { 0, 1, 0} };
+            byte isErosion;
+            for (int i = 1; i < inH - 1; i++)
+            {//가장자리는 처리하지 않음
+                for (int j = 1; j < inW - 1; j++)
+                {
+                    isErosion = 255;
+                    for (int k = 0; k < 3; k++)
+                    {
+                        for (int m = 0; m < 3; m++)
+                        {
+                            if (erosionMask[k, m] == 1)
+                            {
+                                if (outImage[i - 1 + k, j - 1 + m] == 0)
+                                {//이미지가 0이라면
+                                    isErosion = 0;//침식
+                                    outBufImage[i, j] = isErosion;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isErosion == 0)
+                        {
+                            break;
+                        }
+                    }
+                    if (isErosion == 255)
+                    {//마스크를 모두 통과했다면
+                        outBufImage[i, j] = isErosion;
+                    }
+                }
+            }
+            //임시 출력 -> 출력
+            for (int i = 0; i < outH; i++)
+            {
+                for (int j = 0; j < outW; j++)
+                {
+                    outImage[i, j] = outBufImage[i, j];
                 }
             }
             displayImage();
