@@ -1294,7 +1294,7 @@ namespace Quiz012_1
             displayImage();
         }
 
-        //프로그램 잠시대기
+        //프로그램 ms만큼 대기
         private DateTime Delay(int MS)
         {
             DateTime ThisMoment = DateTime.Now;
