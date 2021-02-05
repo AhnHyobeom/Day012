@@ -627,7 +627,27 @@ namespace Quiz012_1
                 }
             }
         }
-
+        void outCopy(double[,] tmpOutput)
+        { //임시 출력 -> 원래 출력
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    if (tmpOutput[i, j] > 255.0)
+                    {
+                        outImage[i, j] = (byte)255;
+                    }
+                    else if (tmpOutput[i, j] < 0.0)
+                    {
+                        outImage[i, j] = (byte)0;
+                    }
+                    else
+                    {
+                        outImage[i, j] = (byte)tmpOutput[i, j];
+                    }
+                }
+            }
+        }
         void embossImage()
         {
             if (inImage == null)
@@ -669,22 +689,7 @@ namespace Quiz012_1
                 }
             }
             //임시 출력 -> 원래 출력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    if(tmpOutput[i, j] > 255.0)
-                    {
-                        outImage[i, j] = (byte)255;
-                    } else if (tmpOutput[i, j] < 0.0)
-                    {
-                        outImage[i, j] = (byte)0;
-                    } else
-                    {
-                        outImage[i, j] = (byte)tmpOutput[i, j];
-                    }
-                }
-            }
+            outCopy(tmpOutput);
             displayImage();
         }
 
@@ -722,24 +727,7 @@ namespace Quiz012_1
             //마스크 연산
             maskOP(tmpInput, tmpOutput, mask);
             //임시 출력 -> 원래 출력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    if (tmpOutput[i, j] > 255.0)
-                    {
-                        outImage[i, j] = (byte)255;
-                    }
-                    else if (tmpOutput[i, j] < 0.0)
-                    {
-                        outImage[i, j] = (byte)0;
-                    }
-                    else
-                    {
-                        outImage[i, j] = (byte)tmpOutput[i, j];
-                    }
-                }
-            }
+            outCopy(tmpOutput);
             displayImage();
         }
 
@@ -777,24 +765,7 @@ namespace Quiz012_1
             //마스크 연산
             maskOP(tmpInput, tmpOutput, mask);
             //임시 출력 -> 원래 출력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    if (tmpOutput[i, j] > 255.0)
-                    {
-                        outImage[i, j] = (byte)255;
-                    }
-                    else if (tmpOutput[i, j] < 0.0)
-                    {
-                        outImage[i, j] = (byte)0;
-                    }
-                    else
-                    {
-                        outImage[i, j] = (byte)tmpOutput[i, j];
-                    }
-                }
-            }
+            outCopy(tmpOutput);
             displayImage();
         }
 
@@ -859,14 +830,8 @@ namespace Quiz012_1
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
             morphologyOP(tmpInput, tmpOutput, 1);
-            //후처리
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    outImage[i, j] = (byte)tmpOutput[i, j];
-                }
-            }
+            //임시 출력 -> 원래 출력
+            outCopy(tmpOutput);
             displayImage();
         }
         
@@ -892,14 +857,8 @@ namespace Quiz012_1
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
             morphologyOP(tmpInput, tmpOutput, 0);
-            //후처리
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    outImage[i, j] = (byte)tmpOutput[i, j];
-                }
-            }
+            //임시 출력 -> 원래 출력
+            outCopy(tmpOutput);
             displayImage();
         }
         void openingGray()
@@ -929,14 +888,8 @@ namespace Quiz012_1
             //가장자리 처리
             fillEdges(outBufImage, tmpOutput);
             morphologyOP(outBufImage, tmpOutput, 0);
-            //후처리
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    outImage[i, j] = (byte)tmpOutput[i, j];
-                }
-            }
+            //임시 출력 -> 원래 출력
+            outCopy(tmpOutput);
             displayImage();
         }
 
@@ -967,14 +920,8 @@ namespace Quiz012_1
             //가장자리 처리
             fillEdges(outBufImage, tmpOutput);
             morphologyOP(outBufImage, tmpOutput, 1);
-            //후처리
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    outImage[i, j] = (byte)tmpOutput[i, j];
-                }
-            }
+            //임시 출력 -> 원래 출력
+            outCopy(tmpOutput);
             displayImage();
         }
         //모폴로지 이진화 이미지 (가장자리 처리하지 않음, 단순처리)
