@@ -31,6 +31,40 @@ namespace Quiz012_1
 
         }
 
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.O:
+                        openImage();
+                        break;
+                    case Keys.S:
+                        saveImage();
+                        break;
+                }
+            }
+            if (e.Alt)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.E:
+                        embossImage();
+                        break;
+                    case Keys.B:
+                        blurrImage();
+                        break;
+                    case Keys.S:
+                        sharpImage();
+                        break;
+                    case Keys.M:
+                        medianFilter();
+                        break;
+                }
+            }
+        }
+
         private void 열기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openImage();
@@ -528,267 +562,7 @@ namespace Quiz012_1
                 }
             }
         }
-
-        void embossImage()
-        {
-            if (inImage == null)
-            {
-                return;
-            }
-            outH = inH;
-            outW = inW;
-            outImage = new byte[outH, outW];
-            //화소 영역 처리
-            //마스크 결정
-            const int MSIZE = 3;
-            double[,] mask = { 
-                { -1.0, 0.0, 0.0}, 
-                { 0.0, 0.0, 0.0}, 
-                { 0.0, 0.0, 1.0} };
-            //임시 입력 출력 메모리 할당
-            double[,] tmpInput = new double[inH + 2, inW + 2];
-            double[,] tmpOutput = new double[outH, outW];
-
-            //임시 입력을 중간값인 127로 초기화 -> 평균 값으로 하거나 가장자리 값을 땡겨온다
-            for(int i = 0; i < inH + 2; i++)
-            {
-                for(int j = 0; j < inW + 2; j++)
-                {
-                    tmpInput[i, j] = 127;
-                }
-            }
-            //입력 -> 임시 입력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    tmpInput[i + 1, j + 1] = inImage[i,j];
-                }
-            }
-            double sum = 0.0;
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    for(int k = 0; k < MSIZE; k++)
-                    {
-                        for(int m = 0; m < MSIZE; m++) 
-                        {
-                            sum += tmpInput[i + k, j + m] * mask[k, m];
-                        }
-                    }
-                    tmpOutput[i, j] = sum;
-                    sum = 0.0;
-                }
-            }
-
-            //후처리 Mask의 합이 0이면 127 더하기
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    tmpOutput[i, j] += 127;
-                }
-            }
-            //임시 출력 -> 원래 출력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    double d = tmpOutput[i, j];
-                    if(d > 255.0)
-                    {
-                        d = 255.0;
-                    } else if (d < 0.0)
-                    {
-                        d = 00;
-                    } else
-                    {
-                        outImage[i, j] = (byte)d;
-                    }
-                }
-            }
-            displayImage();
-        }
-
-        void blurrImage()
-        {
-            if (inImage == null)
-            {
-                return;
-            }
-            outH = inH;
-            outW = inW;
-            outImage = new byte[outH, outW];
-            //화소 영역 처리
-            //마스크 결정
-            const int MSIZE = 3;
-            double[,] mask = {
-                { 1/9.0, 1/9.0, 1/9.0},
-                { 1/9.0, 1/9.0, 1/9.0},
-                { 1/9.0, 1/9.0, 1/9.0} };
-            //임시 입력 출력 메모리 할당
-            double[,] tmpInput = new double[inH + 2, inW + 2];
-            double[,] tmpOutput = new double[outH, outW];
-
-            //임시 입력을 중간값인 127로 초기화 -> 평균 값으로 하거나 가장자리 값을 땡겨온다
-            for (int i = 0; i < inH + 2; i++)
-            {
-                for (int j = 0; j < inW + 2; j++)
-                {
-                    tmpInput[i, j] = 127;
-                }
-            }
-            //입력 -> 임시 입력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    tmpInput[i + 1, j + 1] = inImage[i, j];
-                }
-            }
-            double sum = 0.0;
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    for (int k = 0; k < MSIZE; k++)
-                    {
-                        for (int m = 0; m < MSIZE; m++)
-                        {
-                            sum += tmpInput[i + k, j + m] * mask[k, m];
-                        }
-                    }
-                    tmpOutput[i, j] = sum;
-                    sum = 0.0;
-                }
-            }
-
-            //후처리 Mask의 합이 0이면 127 더하기
-           /* for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    tmpOutput[i, j] += 127;
-                }
-            }*/
-            //임시 출력 -> 원래 출력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    double d = tmpOutput[i, j];
-                    if (d > 255.0)
-                    {
-                        d = 255.0;
-                    }
-                    else if (d < 0.0)
-                    {
-                        d = 00;
-                    }
-                    else
-                    {
-                        outImage[i, j] = (byte)d;
-                    }
-                }
-            }
-            displayImage();
-        }
-
-        void sharpImage()
-        {
-            if (inImage == null)
-            {
-                return;
-            }
-            outH = inH;
-            outW = inW;
-            outImage = new byte[outH, outW];
-            //화소 영역 처리
-            //마스크 결정
-            const int MSIZE = 3;
-            double[,] mask = {
-                { -1, -1, -1},
-                { -1, 9, -1},
-                { -1, -1, -1} };
-            //임시 입력 출력 메모리 할당
-            double[,] tmpInput = new double[inH + 2, inW + 2];
-            double[,] tmpOutput = new double[outH, outW];
-
-            //임시 입력을 중간값인 127로 초기화 -> 평균 값으로 하거나 가장자리 값을 땡겨온다
-            for (int i = 0; i < inH + 2; i++)
-            {
-                for (int j = 0; j < inW + 2; j++)
-                {
-                    tmpInput[i, j] = 127;
-                }
-            }
-            //입력 -> 임시 입력
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    tmpInput[i + 1, j + 1] = inImage[i, j];
-                }
-            }
-            double sum = 0.0;
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    for (int k = 0; k < MSIZE; k++)
-                    {
-                        for (int m = 0; m < MSIZE; m++)
-                        {
-                            sum += tmpInput[i + k, j + m] * mask[k, m];
-                        }
-                    }
-                    tmpOutput[i, j] = sum;
-                    sum = 0.0;
-                }
-            }
-            for (int i = 0; i < inH; i++)
-            {
-                for (int j = 0; j < inW; j++)
-                {
-                    double d = tmpOutput[i, j];
-                    if (d > 255.0)
-                    {
-                        d = 255.0;
-                    }
-                    else if (d < 0.0)
-                    {
-                        d = 00;
-                    }
-                    else
-                    {
-                        outImage[i, j] = (byte)d;
-                    }
-                }
-            }
-            displayImage();
-        }
-
-        void erosionGray()
-        {
-            if (inImage == null)
-            {
-                return;
-            }
-            outH = inH;
-            outW = inW;
-            outImage = new byte[outH, outW];
-            byte[,] tmpInput = new byte[inH + 4, inW + 4];//확장된 메모리
-            byte[,] inputCopy = new byte[inH, inW];//가장자리 처리를 위한 복사본 메모리
-            byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
-            inputCopy = (byte[,])inImage.Clone();
-            calculErosionGray(tmpInput, inputCopy, tmpOutput);
-            //후처리
-            outImage = (byte[,])tmpOutput.Clone();
-            displayImage();
-        }
-        
-        void fillEdges(byte[,] tmpInput, byte[,] inputCopy)
+        void fillEdges(double[,] tmpInput, double[,] inputCopy)
         {//가장자리 처리 알고리즘 5x5 마스크 전용
             for (int i = 0; i < inH + 4; i++)
             {
@@ -833,31 +607,269 @@ namespace Quiz012_1
                 }
             }
         }
-        void calculErosionGray(byte[,] tmpInput, byte[,] inputCopy, byte[,] tmpOutput)
+        //단순 마스크 처리
+        void maskOP(double[,] tmpInput, double[,] tmpOutput, double[,] mask)
         {
+            double sum = 0.0;
+            for (int i = 2; i < inH + 2; i++)
+            {
+                for (int j = 2; j < inW + 2; j++)
+                {
+                    for (int k = 0; k < 5; k++)
+                    {
+                        for (int m = 0; m < 5; m++)
+                        {
+                            sum += tmpInput[i - 2 + k, j - 2 + m] * mask[k, m];
+                        }
+                    }
+                    tmpOutput[i - 2, j - 2] = sum;
+                    sum = 0.0;
+                }
+            }
+        }
+
+        void embossImage()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            //마스크 결정
+            double[,] mask = { 
+                { -1.0, -1.0, 0.0, 0.0, 0.0}, 
+                { -1.0, -1.0, 0.0, 0.0, 0.0}, 
+                { 0.0, 0.0, 0.0, 0.0, 0.0}, 
+                { 0.0, 0.0, 0.0, 1.0, 1.0}, 
+                { 0.0, 0.0, 0.0, 1.0, 1.0} };
+            //임시 입력 출력 메모리 할당
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            //입력 -> 복사본 복사
+            for(int i = 0; i < inH; i++)
+            {
+                for(int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
-            byte min;
+            //마스크연산
+            maskOP(tmpInput, tmpOutput, mask);
+            //후처리 Mask의 합이 0이면 127 더하기
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    tmpOutput[i, j] += 127;
+                }
+            }
+            //임시 출력 -> 원래 출력
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    if(tmpOutput[i, j] > 255.0)
+                    {
+                        outImage[i, j] = (byte)255;
+                    } else if (tmpOutput[i, j] < 0.0)
+                    {
+                        outImage[i, j] = (byte)0;
+                    } else
+                    {
+                        outImage[i, j] = (byte)tmpOutput[i, j];
+                    }
+                }
+            }
+            displayImage();
+        }
+
+        void blurrImage()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            //화소 영역 처리
+            //마스크 결정
+            double[,] mask = {
+                { 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0},
+                { 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0},
+                { 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0},
+                { 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0},
+                { 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0, 1.0/25.0} };
+            //임시 입력 출력 메모리 할당
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            //입력 -> 복사본 복사
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
+            //가장자리 처리
+            fillEdges(tmpInput, inputCopy);
+            //마스크 연산
+            maskOP(tmpInput, tmpOutput, mask);
+            //임시 출력 -> 원래 출력
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    if (tmpOutput[i, j] > 255.0)
+                    {
+                        outImage[i, j] = (byte)255;
+                    }
+                    else if (tmpOutput[i, j] < 0.0)
+                    {
+                        outImage[i, j] = (byte)0;
+                    }
+                    else
+                    {
+                        outImage[i, j] = (byte)tmpOutput[i, j];
+                    }
+                }
+            }
+            displayImage();
+        }
+
+        void sharpImage()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            //화소 영역 처리
+            //마스크 결정
+            double[,] mask = {
+                { -1, -1, -1, -1, -1},
+                { -1, -1, -1, -1, -1},
+                { -1, -1, 24, -1, -1},
+                { -1, -1, -1, -1, -1},
+                { -1, -1, -1, -1, -1} };
+            //임시 입력 출력 메모리 할당
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            //입력 -> 복사본 복사
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
+            //가장자리 처리
+            fillEdges(tmpInput, inputCopy);
+            //마스크 연산
+            maskOP(tmpInput, tmpOutput, mask);
+            //임시 출력 -> 원래 출력
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    if (tmpOutput[i, j] > 255.0)
+                    {
+                        outImage[i, j] = (byte)255;
+                    }
+                    else if (tmpOutput[i, j] < 0.0)
+                    {
+                        outImage[i, j] = (byte)0;
+                    }
+                    else
+                    {
+                        outImage[i, j] = (byte)tmpOutput[i, j];
+                    }
+                }
+            }
+            displayImage();
+        }
+
+        //모폴로지 연산
+        void morphologyOP(double[,] tmpInput, double[,] tmpOutput, int isErosion)
+        { //침식(isErosion = 1) min 팽창(isErosion = 0) max 
+            double min, max;
             for (int i = 2; i < inH + 2; i++)
             {
                 for (int j = 2; j < inW + 2; j++)
                 {
                     min = 255;
+                    max = 0;
                     for (int k = 0; k < 5; k++)
                     {
                         for (int m = 0; m < 5; m++)
                         {
-                            if (tmpInput[i - 2 + k, j - 2 + m] < min)
+                            if(isErosion == 1)//침식
                             {
-                                min = tmpInput[i - 2 + k, j - 2 + m];
+                                if (tmpInput[i - 2 + k, j - 2 + m] < min)
+                                {
+                                    min = tmpInput[i - 2 + k, j - 2 + m];
+                                }
+                            } else//팽창
+                            {
+                                if (tmpInput[i - 2 + k, j - 2 + m] > max)
+                                {
+                                    max = tmpInput[i - 2 + k, j - 2 + m];
+                                }
                             }
                         }
                     }
-                    tmpOutput[i - 2, j - 2] = min;
+                    if (isErosion == 1)//침식
+                    {
+                        tmpOutput[i - 2, j - 2] = min;
+                    } else
+                    {
+                        tmpOutput[i - 2, j - 2] = max;
+                    }
                 }
             }
         }
-
+        void erosionGray()
+        {
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
+            //가장자리 처리
+            fillEdges(tmpInput, inputCopy);
+            morphologyOP(tmpInput, tmpOutput, 1);
+            //후처리
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    outImage[i, j] = (byte)tmpOutput[i, j];
+                }
+            }
+            displayImage();
+        }
+        
         void dilationGray()
         {
             if (inImage == null)
@@ -867,40 +879,29 @@ namespace Quiz012_1
             outH = inH;
             outW = inW;
             outImage = new byte[outH, outW];
-            byte[,] tmpInput = new byte[inH + 4, inW + 4];//확장된 메모리
-            byte[,] inputCopy = new byte[inH, inW];//가장자리 처리를 위한 복사본 메모리
-            byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
-            inputCopy = (byte[,])inImage.Clone();
-            calculDilationGray(tmpInput, inputCopy, tmpOutput);
-            //후처리
-            outImage = (byte[,])tmpOutput.Clone();
-            displayImage();
-        }
-        void calculDilationGray (byte[,] tmpInput, byte[,] inputCopy, byte[,] tmpOutput)
-        {
-            //가장자리 처리
-            fillEdges(tmpInput, inputCopy);
-            byte max;
-            for (int i = 2; i < inH + 2; i++)
-            {//가장자리는 처리하지 않음
-                for (int j = 2; j < inW + 2; j++)
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
                 {
-                    max = 0;
-                    for (int k = 0; k < 5; k++)
-                    {
-                        for (int m = 0; m < 5; m++)
-                        {
-                            if (tmpInput[i - 2 + k, j - 2 + m] > max)
-                            {
-                                max = (byte)tmpInput[i - 2 + k, j - 2 + m];
-                            }
-                        }
-                    }
-                    tmpOutput[i - 2,j - 2] = max;
+                    inputCopy[i, j] = inImage[i, j];
                 }
             }
+            //가장자리 처리
+            fillEdges(tmpInput, inputCopy);
+            morphologyOP(tmpInput, tmpOutput, 0);
+            //후처리
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    outImage[i, j] = (byte)tmpOutput[i, j];
+                }
+            }
+            displayImage();
         }
-
         void openingGray()
         {
             if (inImage == null)
@@ -910,34 +911,30 @@ namespace Quiz012_1
             outH = inH;
             outW = inW;
             outImage = new byte[outH, outW];
-            byte[,] tmpInput = new byte[inH + 4, inW + 4];//확장된 메모리
-            byte[,] inputCopy = new byte[inH, inW];//가장자리 처리를 위한 복사본 메모리
-            byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
-            inputCopy = (byte[,])inImage.Clone();
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
-            calculErosionGray(tmpInput, inputCopy, tmpOutput);
+            morphologyOP(tmpInput, tmpOutput, 1);
             //2번 가장차리 처리 연산을 위한 메모리 
-            byte[,] outBufImage = new byte[outH + 4, outW + 4]; 
+            double[,] outBufImage = new double[outH + 4, outW + 4]; 
             //가장자리 처리
             fillEdges(outBufImage, tmpOutput);
-            byte max;
-            for (int i = 2; i < inH + 2; i++)
+            morphologyOP(outBufImage, tmpOutput, 0);
+            //후처리
+            for (int i = 0; i < inH; i++)
             {
-                for (int j = 2; j < inW + 2; j++)
+                for (int j = 0; j < inW; j++)
                 {
-                    max = 0;
-                    for (int k = 0; k < 5; k++)
-                    {
-                        for (int m = 0; m < 5; m++)
-                        {
-                            if (outBufImage[i - 2 + k, j - 2 + m] > max)
-                            {
-                                max = outBufImage[i - 2 + k, j - 2 + m];
-                            }
-                        }
-                    }
-                    outImage[i - 2, j - 2] = max;
+                    outImage[i, j] = (byte)tmpOutput[i, j];
                 }
             }
             displayImage();
@@ -952,39 +949,35 @@ namespace Quiz012_1
             outH = inH;
             outW = inW;
             outImage = new byte[outH, outW];
-            byte[,] tmpInput = new byte[inH + 4, inW + 4];//확장된 메모리
-            byte[,] inputCopy = new byte[inH, inW];//가장자리 처리를 위한 복사본 메모리
-            byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
-            inputCopy = (byte[,])inImage.Clone();
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] inputCopy = new double[inH, inW];//가장자리 처리를 위한 복사본 메모리
+            double[,] tmpOutput = new double[inH, inW];//후처리를 위한 출력 메모리
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
             //가장자리 처리
             fillEdges(tmpInput, inputCopy);
-            calculDilationGray(tmpInput, inputCopy, tmpOutput);
+            morphologyOP(tmpInput, tmpOutput, 0);
             //2번 가장차리 처리 연산을 위한 메모리 
-            byte[,] outBufImage = new byte[outH + 4, outW + 4];
+            double[,] outBufImage = new double[outH + 4, outW + 4];
             //가장자리 처리
             fillEdges(outBufImage, tmpOutput);
-            byte min;
-            for (int i = 2; i < inH + 2; i++)
+            morphologyOP(outBufImage, tmpOutput, 1);
+            //후처리
+            for (int i = 0; i < inH; i++)
             {
-                for (int j = 2; j < inW + 2; j++)
+                for (int j = 0; j < inW; j++)
                 {
-                    min = 255;
-                    for (int k = 0; k < 5; k++)
-                    {
-                        for (int m = 0; m < 5; m++)
-                        {
-                            if (outBufImage[i - 2 + k, j - 2 + m] < min)
-                            {
-                                min = outBufImage[i - 2 + k, j - 2 + m];
-                            }
-                        }
-                    }
-                    outImage[i - 2, j - 2] = min;
+                    outImage[i, j] = (byte)tmpOutput[i, j];
                 }
             }
             displayImage();
         }
-        //모폴로지 이진화 영상 (이진화 영상은 가장자리 처리하지 않음)
+        //모폴로지 이진화 이미지 (가장자리 처리하지 않음, 단순처리)
         void erosionBW()
         {
             if (inImage == null)
@@ -1154,40 +1147,6 @@ namespace Quiz012_1
             displayImage();
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Control)
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.O:
-                        openImage();
-                        break;
-                    case Keys.S:
-                        saveImage();
-                        break;
-                }
-            }
-            if (e.Alt)
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.E:
-                        embossImage();
-                        break;
-                    case Keys.B:
-                        blurrImage();
-                        break;
-                    case Keys.S:
-                        sharpImage();
-                        break;
-                    case Keys.M:
-                        medianFilter();
-                        break;
-                }
-            }
-        }
-
         void closingBW()
         {
             if (inImage == null)
@@ -1257,16 +1216,28 @@ namespace Quiz012_1
             outH = inH;
             outW = inW;
             outImage = new byte[outH, outW];
-            byte[,] tmpInput = new byte[inH + 4, inW + 4];//확장된 메모리
-            byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
-            byte[,] inputCopy = new byte[inH, inW];//노이즈 추가 이미지
-            inputCopy = (byte[,])inImage.Clone();
+            double[,] tmpInput = new double[inH + 4, inW + 4];//확장된 메모리
+            double[,] tmpOutput = new double[inH, inW];//가장자리 처리를 위한 출력 메모리
+            double[,] inputCopy = new double[inH, inW];//노이즈 추가 이미지
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    inputCopy[i, j] = inImage[i, j];
+                }
+            }
             int amount = 10;//잡음 개수 조절
                             //가로 x 세로 x (amout / 100)
             int noiseCount = (int)(inH * inW * ((double)amount / 100));
             salt_pepper(noiseCount, inputCopy);//영상에 잡음추가
             //잡음 이미지 출력
-            outImage = (byte[,])inputCopy.Clone();
+            for (int i = 0; i < inH; i++)
+            {
+                for (int j = 0; j < inW; j++)
+                {
+                    outImage[i, j] = (byte)inputCopy[i, j];
+                }
+            }
             displayImage();
             Delay(3000);
             fillEdges(tmpInput, inputCopy);
@@ -1283,7 +1254,7 @@ namespace Quiz012_1
                     {
                         for (int m = 0; m < sortSize; m++)
                         {
-                            medianSort[temp++] = tmpInput[i - 2 + k, j - 2 + m];
+                            medianSort[temp++] = (byte)tmpInput[i - 2 + k, j - 2 + m];
                         }
                     }
                     Array.Sort(medianSort);
@@ -1310,7 +1281,7 @@ namespace Quiz012_1
             return DateTime.Now;
         }
 
-        void salt_pepper(int noiseCount, byte[,] inputCopy)
+        void salt_pepper(int noiseCount, double[,] inputCopy)
         {//영상에 잡음 추가
             Random r = new Random();
             int salt_or_pepper;
@@ -1322,7 +1293,7 @@ namespace Quiz012_1
                 col = r.Next(0, inW);
                 // 랜덤하게 0 또는 255, 0이면 후추, 255면 소금
                 salt_or_pepper = r.Next(0, 2) * 255;
-                inputCopy[row, col] = (byte)salt_or_pepper;
+                inputCopy[row, col] = salt_or_pepper;
             }
         }
 
