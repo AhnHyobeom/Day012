@@ -52,12 +52,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="medianform.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="medianform.Designer.cs">
-      <DependentUpon>medianform.cs</DependentUpon>
-    </Compile>
     <Compile Include="morphology.cs">
       <SubType>Form</SubType>
     </Compile>

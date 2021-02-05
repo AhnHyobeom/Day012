@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
 
 namespace Quiz012_1
 {
@@ -22,6 +23,8 @@ namespace Quiz012_1
         static int inH, inW, outH, outW;
         static string fileName;
         static Bitmap paper;//그림을 콕콕 찍을 종이
+        static bool mouseYN = false;
+        static int mouseSX, mouseSY, mouseEX, mouseEY;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -180,6 +183,55 @@ namespace Quiz012_1
             histEqualized();
         }
 
+        private void 미디언필터ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            medianFilter();
+        }
+
+        private void 저장ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveImage();
+        }
+
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (!mouseYN)
+            {
+                return;
+            }
+            mouseEX = e.X;
+            mouseEY = e.Y;
+
+            if (mouseSX > mouseEX)
+            {
+                int tmp = mouseSX;
+                mouseSX = mouseEX;
+                mouseEX = tmp;
+            }
+            if (mouseSY > mouseEY)
+            {
+                int tmp = mouseSY;
+                mouseSY = mouseEY;
+                mouseEY = tmp;
+            }
+
+            reverseImage();
+            mouseYN = false;
+        }
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!mouseYN)
+            {
+                return;
+            }
+            mouseSX = e.X; mouseSY = e.Y;
+        }
+        private void 반전마우스로지정ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mouseYN = true;
+        }
+
         //공통 함수부
         void openImage()
         {
@@ -226,6 +278,22 @@ namespace Quiz012_1
             toolStripStatusLabel1.Text = outH.ToString() + " x " + outW.ToString() + " " + fileName;
         }
 
+        private void saveImage()
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.DefaultExt = "raw";
+            sfd.Filter = "로우 이미지(*.raw) | *.raw";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                string saveFname = sfd.FileName;
+                BinaryWriter bw = new BinaryWriter(File.Open(saveFname, FileMode.Create));
+                for (int i = 0; i < outH; i++)
+                    for (int k = 0; k < outW; k++)
+                        bw.Write(outImage[i, k]);
+                bw.Close();
+            }
+        }
+
         //영상 처리 함수부
         void equal_image()
         {
@@ -253,11 +321,25 @@ namespace Quiz012_1
             outH = inH;
             outW = inW;
             outImage = new byte[outH, outW];
+
+            if (!mouseYN)
+            {
+                mouseSX = 0; mouseEX = inH;
+                mouseSY = 0; mouseEY = inW;
+            }
+
             for (int i = 0; i < inH; i++)
             {
                 for (int j = 0; j < inW; j++)
                 {
-                    outImage[i, j] = (byte)(255 - inImage[i, j]);
+                    if ((mouseSX <= j && j <= mouseEX) && (mouseSY <= i && i <= mouseEY))
+                    {
+                        outImage[i, j] = (byte)(255 - inImage[i, j]);
+                    }
+                    else
+                    {
+                        outImage[i, j] = inImage[i, j];
+                    }
                 }
             }
             displayImage();
@@ -1072,6 +1154,40 @@ namespace Quiz012_1
             displayImage();
         }
 
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.O:
+                        openImage();
+                        break;
+                    case Keys.S:
+                        saveImage();
+                        break;
+                }
+            }
+            if (e.Alt)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.E:
+                        embossImage();
+                        break;
+                    case Keys.B:
+                        blurrImage();
+                        break;
+                    case Keys.S:
+                        sharpImage();
+                        break;
+                    case Keys.M:
+                        medianFilter();
+                        break;
+                }
+            }
+        }
+
         void closingBW()
         {
             if (inImage == null)
@@ -1130,6 +1246,84 @@ namespace Quiz012_1
                 }
             }
             displayImage();
+        }
+
+        void medianFilter()
+        {//노이즈 제거 알고리즘 노이즈 이미지 저장기능 구현하지 않음
+            if (inImage == null)
+            {
+                return;
+            }
+            outH = inH;
+            outW = inW;
+            outImage = new byte[outH, outW];
+            byte[,] tmpInput = new byte[inH + 4, inW + 4];//확장된 메모리
+            byte[,] tmpOutput = new byte[inH, inW];//가장자리 처리를 위한 출력 메모리
+            byte[,] inputCopy = new byte[inH, inW];//노이즈 추가 이미지
+            inputCopy = (byte[,])inImage.Clone();
+            int amount = 10;//잡음 개수 조절
+                            //가로 x 세로 x (amout / 100)
+            int noiseCount = (int)(inH * inW * ((double)amount / 100));
+            salt_pepper(noiseCount, inputCopy);//영상에 잡음추가
+            //잡음 이미지 출력
+            outImage = (byte[,])inputCopy.Clone();
+            displayImage();
+            Delay(3000);
+            fillEdges(tmpInput, inputCopy);
+            int sortSize = 5;
+            byte[] medianSort = new byte[sortSize * sortSize];//정렬을 위한 1차원 배열
+            //inImage 값이 아닌 노이즈가 생긴 tmpInput 값을 가져온다.
+            int temp = 0;//임시변수(배열 인덱스 값)
+            for (int i = 2; i < inH + 2; i++)
+            {//엣지는 처리하지 않음
+                for (int j = 2; j < inW + 2; j++)
+                {
+                    temp = 0;
+                    for (int k = 0; k < sortSize; k++)
+                    {
+                        for (int m = 0; m < sortSize; m++)
+                        {
+                            medianSort[temp++] = tmpInput[i - 2 + k, j - 2 + m];
+                        }
+                    }
+                    Array.Sort(medianSort);
+                    outImage[i - 2, j - 2] = medianSort[(sortSize * sortSize) / 2];//중간 값으로 출력
+                }
+            }
+            //제거 이미지 출력
+            displayImage();
+        }
+
+        //프로그램 잠시대기
+        private DateTime Delay(int MS)
+        {
+            DateTime ThisMoment = DateTime.Now;
+            TimeSpan duration = new TimeSpan(0, 0, 0, 0, MS);
+            DateTime AfterWards = ThisMoment.Add(duration);
+
+            while (AfterWards >= ThisMoment)
+            {
+                System.Windows.Forms.Application.DoEvents();
+                ThisMoment = DateTime.Now;
+            }
+
+            return DateTime.Now;
+        }
+
+        void salt_pepper(int noiseCount, byte[,] inputCopy)
+        {//영상에 잡음 추가
+            Random r = new Random();
+            int salt_or_pepper;
+            int row, col;
+            //잡음 추가
+            for (int i = 0; i < noiseCount; i++)
+            {
+                row = r.Next(0, inH);
+                col = r.Next(0, inW);
+                // 랜덤하게 0 또는 255, 0이면 후추, 255면 소금
+                salt_or_pepper = r.Next(0, 2) * 255;
+                inputCopy[row, col] = (byte)salt_or_pepper;
+            }
         }
 
         void histoImage()

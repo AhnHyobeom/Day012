@@ -52,17 +52,19 @@ namespace Quiz012_1
             this.엠보싱ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.블러링ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.샤프닝ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.미디언필터ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.모폴로지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.erosionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.히스토그램ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.스트레칭ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.엔드인탐색ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.평활화ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.반전마우스로지정ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -79,6 +81,8 @@ namespace Quiz012_1
             this.pictureBox1.Size = new System.Drawing.Size(166, 153);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
             // menuStrip1
             // 
@@ -92,7 +96,7 @@ namespace Quiz012_1
             this.히스토그램ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(591, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(591, 30);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -103,26 +107,27 @@ namespace Quiz012_1
             this.저장ToolStripMenuItem,
             this.종료ToolStripMenuItem});
             this.파일ToolStripMenuItem.Name = "파일ToolStripMenuItem";
-            this.파일ToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.파일ToolStripMenuItem.Size = new System.Drawing.Size(53, 26);
             this.파일ToolStripMenuItem.Text = "파일";
             // 
             // 열기ToolStripMenuItem
             // 
             this.열기ToolStripMenuItem.Name = "열기ToolStripMenuItem";
-            this.열기ToolStripMenuItem.Size = new System.Drawing.Size(122, 26);
-            this.열기ToolStripMenuItem.Text = "열기";
+            this.열기ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.열기ToolStripMenuItem.Text = "열기 (ctrl + o)";
             this.열기ToolStripMenuItem.Click += new System.EventHandler(this.열기ToolStripMenuItem_Click);
             // 
             // 저장ToolStripMenuItem
             // 
             this.저장ToolStripMenuItem.Name = "저장ToolStripMenuItem";
-            this.저장ToolStripMenuItem.Size = new System.Drawing.Size(122, 26);
-            this.저장ToolStripMenuItem.Text = "저장";
+            this.저장ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.저장ToolStripMenuItem.Text = "저장 (ctrl + s)";
+            this.저장ToolStripMenuItem.Click += new System.EventHandler(this.저장ToolStripMenuItem_Click);
             // 
             // 종료ToolStripMenuItem
             // 
             this.종료ToolStripMenuItem.Name = "종료ToolStripMenuItem";
-            this.종료ToolStripMenuItem.Size = new System.Drawing.Size(122, 26);
+            this.종료ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.종료ToolStripMenuItem.Text = "종료";
             // 
             // 화소점처리ToolStripMenuItem
@@ -131,36 +136,37 @@ namespace Quiz012_1
             this.동일이미지ToolStripMenuItem,
             this.흑백이미지ToolStripMenuItem,
             this.반전이미지ToolStripMenuItem,
-            this.밝게어둡게ToolStripMenuItem});
+            this.밝게어둡게ToolStripMenuItem,
+            this.반전마우스로지정ToolStripMenuItem});
             this.화소점처리ToolStripMenuItem.Name = "화소점처리ToolStripMenuItem";
-            this.화소점처리ToolStripMenuItem.Size = new System.Drawing.Size(103, 24);
+            this.화소점처리ToolStripMenuItem.Size = new System.Drawing.Size(103, 26);
             this.화소점처리ToolStripMenuItem.Text = "화소점 처리";
             // 
             // 동일이미지ToolStripMenuItem
             // 
             this.동일이미지ToolStripMenuItem.Name = "동일이미지ToolStripMenuItem";
-            this.동일이미지ToolStripMenuItem.Size = new System.Drawing.Size(183, 26);
+            this.동일이미지ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.동일이미지ToolStripMenuItem.Text = "동일 이미지";
             this.동일이미지ToolStripMenuItem.Click += new System.EventHandler(this.동일이미지ToolStripMenuItem_Click);
             // 
             // 흑백이미지ToolStripMenuItem
             // 
             this.흑백이미지ToolStripMenuItem.Name = "흑백이미지ToolStripMenuItem";
-            this.흑백이미지ToolStripMenuItem.Size = new System.Drawing.Size(183, 26);
+            this.흑백이미지ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.흑백이미지ToolStripMenuItem.Text = "흑백 이미지";
             this.흑백이미지ToolStripMenuItem.Click += new System.EventHandler(this.흑백이미지ToolStripMenuItem_Click);
             // 
             // 반전이미지ToolStripMenuItem
             // 
             this.반전이미지ToolStripMenuItem.Name = "반전이미지ToolStripMenuItem";
-            this.반전이미지ToolStripMenuItem.Size = new System.Drawing.Size(183, 26);
+            this.반전이미지ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.반전이미지ToolStripMenuItem.Text = "반전 이미지";
             this.반전이미지ToolStripMenuItem.Click += new System.EventHandler(this.반전이미지ToolStripMenuItem_Click);
             // 
             // 밝게어둡게ToolStripMenuItem
             // 
             this.밝게어둡게ToolStripMenuItem.Name = "밝게어둡게ToolStripMenuItem";
-            this.밝게어둡게ToolStripMenuItem.Size = new System.Drawing.Size(183, 26);
+            this.밝게어둡게ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.밝게어둡게ToolStripMenuItem.Text = "밝게 / 어둡게";
             this.밝게어둡게ToolStripMenuItem.Click += new System.EventHandler(this.밝게어둡게ToolStripMenuItem_Click);
             // 
@@ -171,7 +177,7 @@ namespace Quiz012_1
             this.축소ToolStripMenuItem,
             this.회전ToolStripMenuItem});
             this.기하학처리ToolStripMenuItem.Name = "기하학처리ToolStripMenuItem";
-            this.기하학처리ToolStripMenuItem.Size = new System.Drawing.Size(103, 24);
+            this.기하학처리ToolStripMenuItem.Size = new System.Drawing.Size(103, 26);
             this.기하학처리ToolStripMenuItem.Text = "기하학 처리";
             // 
             // 확대ToolStripMenuItem
@@ -201,39 +207,47 @@ namespace Quiz012_1
             this.모자이크ToolStripMenuItem,
             this.엠보싱ToolStripMenuItem,
             this.블러링ToolStripMenuItem,
-            this.샤프닝ToolStripMenuItem});
+            this.샤프닝ToolStripMenuItem,
+            this.미디언필터ToolStripMenuItem});
             this.영역처리ToolStripMenuItem.Name = "영역처리ToolStripMenuItem";
-            this.영역처리ToolStripMenuItem.Size = new System.Drawing.Size(88, 24);
+            this.영역처리ToolStripMenuItem.Size = new System.Drawing.Size(88, 26);
             this.영역처리ToolStripMenuItem.Text = "영역 처리";
             this.영역처리ToolStripMenuItem.Click += new System.EventHandler(this.영역처리ToolStripMenuItem_Click);
             // 
             // 모자이크ToolStripMenuItem
             // 
             this.모자이크ToolStripMenuItem.Name = "모자이크ToolStripMenuItem";
-            this.모자이크ToolStripMenuItem.Size = new System.Drawing.Size(152, 26);
+            this.모자이크ToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
             this.모자이크ToolStripMenuItem.Text = "모자이크";
             this.모자이크ToolStripMenuItem.Click += new System.EventHandler(this.모자이크ToolStripMenuItem_Click);
             // 
             // 엠보싱ToolStripMenuItem
             // 
             this.엠보싱ToolStripMenuItem.Name = "엠보싱ToolStripMenuItem";
-            this.엠보싱ToolStripMenuItem.Size = new System.Drawing.Size(152, 26);
-            this.엠보싱ToolStripMenuItem.Text = "엠보싱";
+            this.엠보싱ToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
+            this.엠보싱ToolStripMenuItem.Text = "엠보싱 (alt + e)";
             this.엠보싱ToolStripMenuItem.Click += new System.EventHandler(this.엠보싱ToolStripMenuItem_Click);
             // 
             // 블러링ToolStripMenuItem
             // 
             this.블러링ToolStripMenuItem.Name = "블러링ToolStripMenuItem";
-            this.블러링ToolStripMenuItem.Size = new System.Drawing.Size(152, 26);
-            this.블러링ToolStripMenuItem.Text = "블러링";
+            this.블러링ToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
+            this.블러링ToolStripMenuItem.Text = "블러링 (alt + b)";
             this.블러링ToolStripMenuItem.Click += new System.EventHandler(this.블러링ToolStripMenuItem_Click);
             // 
             // 샤프닝ToolStripMenuItem
             // 
             this.샤프닝ToolStripMenuItem.Name = "샤프닝ToolStripMenuItem";
-            this.샤프닝ToolStripMenuItem.Size = new System.Drawing.Size(152, 26);
-            this.샤프닝ToolStripMenuItem.Text = "샤프닝";
+            this.샤프닝ToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
+            this.샤프닝ToolStripMenuItem.Text = "샤프닝 (alt + s)";
             this.샤프닝ToolStripMenuItem.Click += new System.EventHandler(this.샤프닝ToolStripMenuItem_Click);
+            // 
+            // 미디언필터ToolStripMenuItem
+            // 
+            this.미디언필터ToolStripMenuItem.Name = "미디언필터ToolStripMenuItem";
+            this.미디언필터ToolStripMenuItem.Size = new System.Drawing.Size(238, 26);
+            this.미디언필터ToolStripMenuItem.Text = "미디언 필터 (alt + m)";
+            this.미디언필터ToolStripMenuItem.Click += new System.EventHandler(this.미디언필터ToolStripMenuItem_Click);
             // 
             // 모폴로지ToolStripMenuItem
             // 
@@ -243,7 +257,7 @@ namespace Quiz012_1
             this.openingToolStripMenuItem,
             this.closingToolStripMenuItem});
             this.모폴로지ToolStripMenuItem.Name = "모폴로지ToolStripMenuItem";
-            this.모폴로지ToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
+            this.모폴로지ToolStripMenuItem.Size = new System.Drawing.Size(83, 26);
             this.모폴로지ToolStripMenuItem.Text = "모폴로지";
             this.모폴로지ToolStripMenuItem.Click += new System.EventHandler(this.모폴로지ToolStripMenuItem_Click);
             // 
@@ -275,6 +289,37 @@ namespace Quiz012_1
             this.closingToolStripMenuItem.Text = "closing";
             this.closingToolStripMenuItem.Click += new System.EventHandler(this.closingToolStripMenuItem_Click);
             // 
+            // 히스토그램ToolStripMenuItem
+            // 
+            this.히스토그램ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.스트레칭ToolStripMenuItem,
+            this.엔드인탐색ToolStripMenuItem,
+            this.평활화ToolStripMenuItem});
+            this.히스토그램ToolStripMenuItem.Name = "히스토그램ToolStripMenuItem";
+            this.히스토그램ToolStripMenuItem.Size = new System.Drawing.Size(98, 26);
+            this.히스토그램ToolStripMenuItem.Text = "히스토그램";
+            // 
+            // 스트레칭ToolStripMenuItem
+            // 
+            this.스트레칭ToolStripMenuItem.Name = "스트레칭ToolStripMenuItem";
+            this.스트레칭ToolStripMenuItem.Size = new System.Drawing.Size(178, 26);
+            this.스트레칭ToolStripMenuItem.Text = "스트레칭";
+            this.스트레칭ToolStripMenuItem.Click += new System.EventHandler(this.스트레칭ToolStripMenuItem_Click);
+            // 
+            // 엔드인탐색ToolStripMenuItem
+            // 
+            this.엔드인탐색ToolStripMenuItem.Name = "엔드인탐색ToolStripMenuItem";
+            this.엔드인탐색ToolStripMenuItem.Size = new System.Drawing.Size(178, 26);
+            this.엔드인탐색ToolStripMenuItem.Text = "엔드-인 탐색";
+            this.엔드인탐색ToolStripMenuItem.Click += new System.EventHandler(this.엔드인탐색ToolStripMenuItem_Click);
+            // 
+            // 평활화ToolStripMenuItem
+            // 
+            this.평활화ToolStripMenuItem.Name = "평활화ToolStripMenuItem";
+            this.평활화ToolStripMenuItem.Size = new System.Drawing.Size(178, 26);
+            this.평활화ToolStripMenuItem.Text = "평활화";
+            this.평활화ToolStripMenuItem.Click += new System.EventHandler(this.평활화ToolStripMenuItem_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -292,36 +337,12 @@ namespace Quiz012_1
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(152, 20);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
-            // 히스토그램ToolStripMenuItem
+            // 반전마우스로지정ToolStripMenuItem
             // 
-            this.히스토그램ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.스트레칭ToolStripMenuItem,
-            this.엔드인탐색ToolStripMenuItem,
-            this.평활화ToolStripMenuItem});
-            this.히스토그램ToolStripMenuItem.Name = "히스토그램ToolStripMenuItem";
-            this.히스토그램ToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
-            this.히스토그램ToolStripMenuItem.Text = "히스토그램";
-            // 
-            // 스트레칭ToolStripMenuItem
-            // 
-            this.스트레칭ToolStripMenuItem.Name = "스트레칭ToolStripMenuItem";
-            this.스트레칭ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.스트레칭ToolStripMenuItem.Text = "스트레칭";
-            this.스트레칭ToolStripMenuItem.Click += new System.EventHandler(this.스트레칭ToolStripMenuItem_Click);
-            // 
-            // 엔드인탐색ToolStripMenuItem
-            // 
-            this.엔드인탐색ToolStripMenuItem.Name = "엔드인탐색ToolStripMenuItem";
-            this.엔드인탐색ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.엔드인탐색ToolStripMenuItem.Text = "엔드-인 탐색";
-            this.엔드인탐색ToolStripMenuItem.Click += new System.EventHandler(this.엔드인탐색ToolStripMenuItem_Click);
-            // 
-            // 평활화ToolStripMenuItem
-            // 
-            this.평활화ToolStripMenuItem.Name = "평활화ToolStripMenuItem";
-            this.평활화ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.평활화ToolStripMenuItem.Text = "평활화";
-            this.평활화ToolStripMenuItem.Click += new System.EventHandler(this.평활화ToolStripMenuItem_Click);
+            this.반전마우스로지정ToolStripMenuItem.Name = "반전마우스로지정ToolStripMenuItem";
+            this.반전마우스로지정ToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.반전마우스로지정ToolStripMenuItem.Text = "반전 마우스로 지정";
+            this.반전마우스로지정ToolStripMenuItem.Click += new System.EventHandler(this.반전마우스로지정ToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -337,6 +358,7 @@ namespace Quiz012_1
             this.Text = "영상처리 Quiz001";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -382,6 +404,8 @@ namespace Quiz012_1
         private System.Windows.Forms.ToolStripMenuItem 스트레칭ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 엔드인탐색ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 평활화ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 미디언필터ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 반전마우스로지정ToolStripMenuItem;
     }
 }
 
